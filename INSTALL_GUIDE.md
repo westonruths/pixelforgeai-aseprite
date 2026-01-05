@@ -30,7 +30,7 @@
 
 ## Step 2: Install the Extension
 
-1.  Double-click **`PixelForgeAI.aseprite-extension`**.
+1.  Double-click **`PixelForgeAI.aseprite-extension`** (or open it with Aseprite).
 2.  Aseprite will prompt you to install. Click **Install**.
 3.  Restart Aseprite.
 
@@ -39,7 +39,7 @@
 ## Step 3: Generate Art
 
 1.  Ensure the server is running (terminal shows `Running on http://127.0.0.1:5000`).
-2.  In Aseprite: `File` → `Scripts` → `PixelForgeAI`.
+2.  In Aseprite: `File` → `PixelForgeAI`.
 
 ### DALL-E 3 (Text-to-Image)
 - Select **OpenAI** as provider.

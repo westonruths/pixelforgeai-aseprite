@@ -22,7 +22,7 @@ Generate **professional pixel art assets** directly inside Aseprite using **DALL
 1.  **Install Extension:** Double-click `PixelForgeAI.aseprite-extension`.
 2.  **Configure API Key:** Copy `.env.example` to `.env` and add your key.
 3.  **Run Server:** `./start_server.sh` (Mac/Linux) or `python sd_server.py` (Windows).
-4.  **Generate:** In Aseprite → `File` → `Scripts` → `PixelForgeAI`.
+4.  **Generate:** In Aseprite → `File` → `PixelForgeAI`.
 
 See [INSTALL_GUIDE.md](INSTALL_GUIDE.md) for detailed instructions.
 
