@@ -1,0 +1,21 @@
+{
+    "name": "aseprite-cloud-ai",
+    "displayName": "Aseprite Cloud AI",
+    "description": "Generate pixel art using Cloud AI (DALL-E 3)",
+    "version": "6.3.0",
+    "author": {
+        "name": "RED",
+        "email": "redhere303@gmail.com"
+    },
+    "license": "MIT",
+    "categories": [
+        "Scripts"
+    ],
+    "contributes": {
+        "scripts": [
+            {
+                "path": "./main.lua"
+            }
+        ]
+    }
+}

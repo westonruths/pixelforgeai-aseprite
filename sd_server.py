@@ -70,7 +70,75 @@ class CloudArtServer:
             
         except Exception as e:
             raise Exception(f"OpenAI API Error: {str(e)}")
+    def generate_image_stability(self, prompt, api_key, init_image=None, strength=0.35, **kwargs):
+        """Generate image using Stability AI Structure Control (V2)."""
+        print(f"🎨 Generating with Stability AI (Structure Control)...")
+        
+        # New V2 Endpoint for Structure Control
+        # This preserves the "Structure" (Shape/Edges) of the input but generates new content.
+        api_host = os.getenv('API_HOST', 'https://api.stability.ai')
+        url = f"{api_host}/v2beta/stable-image/control/structure"
 
+        # 1. Flatten Transparency (Composite on Black) to ensure clear structure
+        if init_image:
+            if init_image.mode == 'RGBA':
+                background = Image.new('RGB', init_image.size, (0, 0, 0))
+                background.paste(init_image, mask=init_image.split()[3])
+                init_image = background
+            else:
+                init_image = init_image.convert('RGB')
+                
+            # Resize logic (V2 supports various sizes, but sticking to 1024 safe zone)
+            if init_image.size != (1024, 1024):
+                print(f"   - Upscaling guide image from {init_image.size} to (1024, 1024)")
+                init_image = init_image.resize((1024, 1024), Image.NEAREST)
+
+        # Convert to bytes
+        img_byte_arr = io.BytesIO()
+        init_image.save(img_byte_arr, format='PNG')
+        img_byte_arr = img_byte_arr.getvalue()
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Accept": "application/json"
+        }
+        
+        # Multipart Data for V2 Structure
+        # image: The guide image
+        # prompt: The prompt
+        # control_strength: 0.0 to 1.0 (How much structure to keep)
+        files = {
+            "image": ("struct_guide.png", img_byte_arr, "image/png"),
+        }
+        
+        # Map strength: 
+        # User Strength 1.0 = "Change Everything" -> Control Strength 0.0
+        # User Strength 0.0 = "Keep Everything" -> Control Strength 1.0
+        # Use simple inversion + bias to ensure structure is respected.
+        # 0.35 gen strength -> 0.65+0.2 = 0.85 Control
+        # 1.0 gen strength -> 0.0+0.2 = 0.2 Control
+        control_strength = max(0.1, min(1.0, 1.0 - strength + 0.3)) 
+        
+        data = {
+            "prompt": prompt,
+            "negative_prompt": "blurry, low quality, bad anatomy, bad perspective",
+            "control_strength": str(control_strength),
+            "seed": "0",
+            "output_format": "png"
+        }
+        
+        print(f"   - Sending to V2 Structure. Control Strength: {control_strength:.2f}")
+
+        response = requests.post(url, headers=headers, files=files, data=data)
+
+        if response.status_code != 200:
+            raise Exception(f"Stability V2 Error ({response.status_code}): {response.text}")
+
+        # V2 Response format: { "image": "base64...", "finish_reason": "SUCCESS", "seed": ... }
+        data = response.json()
+        image_b64 = data["image"]
+        image = Image.open(io.BytesIO(base64.b64decode(image_b64)))
+        return image
     def process_for_pixel_art(self, image, target_size=(64, 64), colors=16):
         """Post-processing to make high-res DALL-E output look like pixel art."""
         print(f"🖼️ Downscaling to pixel art: {target_size}, {colors} colors")
@@ -109,17 +177,55 @@ def generate():
         if not prompt:
             return jsonify({"success": False, "error": "No prompt provided"}), 400
         
-        if not api_key:
-             # Try environment variable
-             api_key = os.environ.get("OPENAI_API_KEY")
+        # Determine Provider
+        ai_provider = data.get('ai_provider', 'OpenAI (DALL-E)')
+        print(f"🤖 Provider: {ai_provider}")
         
-        if not api_key:
-             return jsonify({"success": False, "error": "No OpenAI API Key provided. Please enter it in the extension settings."}), 401
+        if 'Stability' in ai_provider:
+             api_key = data.get('api_key') or os.environ.get("STABILITY_API_KEY")
+             if not api_key:
+                  return jsonify({"success": False, "error": "No Stability API Key found in .env"}), 401
+        else:
+             api_key = data.get('api_key') or os.environ.get("OPENAI_API_KEY")
+             if not api_key:
+                  return jsonify({"success": False, "error": "No OpenAI API Key found in .env"}), 401
 
         start_time = datetime.now()
         
-        # Generate raw image
-        image = cloud_server.generate_image(prompt, api_key)
+        # Handle Init Image (Guide)
+        init_image = None
+        init_image_b64 = data.get('init_image')
+        if init_image_b64:
+            try:
+                # Decode init image
+                init_image = Image.open(io.BytesIO(base64.b64decode(init_image_b64)))
+                
+                # DEBUG: Save copy of what we received
+                try:
+                    debug_path = "debug_received_guide.png"
+                    init_image.save(debug_path)
+                    print(f"💾 Debug: Saved received guide image to '{debug_path}'")
+                except Exception as e:
+                    print(f"⚠️ Failed to save debug image: {e}")
+
+                if init_image.mode != "RGBA":
+                    init_image = init_image.convert("RGBA")
+            except Exception as e:
+                print(f"⚠️ Failed to process init_image: {e}")
+
+        # GENERATE
+        if 'Stability' in ai_provider:
+            strength = float(data.get('strength', 0.35))
+            image = cloud_server.generate_image_stability(prompt, api_key, init_image=init_image, strength=strength)
+        else:
+            image = cloud_server.generate_image(prompt, api_key)
+
+        # DEBUG: Save raw output from AI
+        try:
+            image.save("debug_raw_output.png")
+            print(f"💾 Debug: Saved raw AI output to 'debug_raw_output.png'")
+        except Exception as e:
+            print(f"⚠️ Failed to save debug raw output: {e}")
         
         # Process for pixel art
         pixel_width = int(data.get('pixel_width', 64))

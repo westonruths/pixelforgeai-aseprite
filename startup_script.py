@@ -30,10 +30,8 @@ def create_venv():
 def install_dependencies():
     """Install dependencies from requirements.txt."""
     print("🔧 Installing/Updating dependencies...")
-    pip_cmd = os.path.join(VENV_DIR, "bin", "pip")
-    
     try:
-        subprocess.check_call([pip_cmd, "install", "-r", REQUIREMENTS_FILE])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", REQUIREMENTS_FILE])
         print("✅ Dependencies installed.")
     except subprocess.CalledProcessError:
         print("❌ Failed to install dependencies.")

@@ -141,7 +141,7 @@ echo "Starting Python setup script..."
 echo ""
 
 # Let Python handle everything from here
-python startup_script.py
+./venv/bin/python startup_script.py
 
 # If we get here, the server has stopped
 echo ""
