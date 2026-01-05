@@ -28,13 +28,13 @@ See [INSTALL_GUIDE.md](INSTALL_GUIDE.md) for detailed instructions.
 
 ---
 
-## � Credits
+## 🙏 Credits
 
 This tool is built on top of [PixelAI by RED](https://red335.itch.io/pixelai-local-ai-directly-in-aseprite). Thank you for the foundation!
 
 ---
 
-## �📄 License
+## 📄 License
 
 MIT License – Free to use and modify.
 
