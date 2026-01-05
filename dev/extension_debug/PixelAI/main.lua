@@ -17,7 +17,7 @@ end
 function init(plugin)
     plugin:newCommand{
         id = "CloudAIGenerator",
-        title = "Aseprite Cloud AI",
+        title = "PixelForgeAI",
         group = "file_scripts",
         onclick = run_ai_generator
     }

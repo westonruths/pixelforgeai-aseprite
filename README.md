@@ -1,26 +1,41 @@
-# PixelAI: Cloud-Powered Aseprite Tools
+# PixelForgeAI – Cloud-Powered Pixel Art Generation for Aseprite
 
-**Professional AI generation directly within Aseprite**, powered by DALL-E 3 and Stability AI. 
+Generate **professional pixel art assets** directly inside Aseprite using **DALL-E 3** and **Stability AI**.
 
-> **Note:** This is a "Cloud Edition" tool. It requires an API Key (OpenAI or Stability AI) but runs lightly on any computer (Mac/Windows/Linux) without needing a powerful GPU.
+> **Cloud Edition:** Requires an API Key (OpenAI or Stability AI) but runs on any computer without a powerful GPU.
 
-## Features
-- 🎨 **Text-to-Pixel Art:** Generate high-quality assets using DALL-E 3.
-- 🧱 **Hex Prison Workflow (Stability AI):** Use your own shapes as strict guides. The AI paints *inside* your shape, preserving your exact geometry.
-- 🖼️ **Seamless Integration:** Generated images appear directly as new layers/frames in Aseprite.
-- 🛠️ **No Local GPU Needed:** All heavy lifting is done in the cloud.
+---
 
-## Installation Breakdown
-1. **Install Extension:** Double-click `pixel-ai-tool.aseprite-extension` to install it in Aseprite.
-2. **Start Server:** Run the lightweight Python bridge (`start_server.sh` or `start_server.bat`).
-   - *Why a server?* Aseprite's scripting language (Lua) cannot easily handle complex secure API calls and image processing. The python script handles the heavy lifting.
+## ✨ Features
 
-## Quick Start
-1.  Add your API Key to `.env`.
-2.  Run `./start_server.sh`.
-3.  Open Aseprite -> `File` -> `Scripts` -> `PixelAI`.
+| Feature | Description |
+|---------|-------------|
+| 🎨 **Text-to-Pixel** | Type a prompt, get pixel art via DALL-E 3. |
+| 🧱 **Shape Control** | Draw a shape; the AI fills it with detail (Stability AI). |
+| 🖼️ **Direct Integration** | Results appear as new layers in Aseprite. |
+| ☁️ **No GPU Needed** | All processing happens in the cloud. |
 
-Read [INSTALL_GUIDE.md](INSTALL_GUIDE.md) for detailed setup instructions.
+---
 
-## License
-MIT License. Free to use and modify.
+## 🚀 Quick Start
+
+1.  **Install Extension:** Double-click `PixelForgeAI.aseprite-extension`.
+2.  **Configure API Key:** Copy `.env.example` to `.env` and add your key.
+3.  **Run Server:** `./start_server.sh` (Mac/Linux) or `python sd_server.py` (Windows).
+4.  **Generate:** In Aseprite → `File` → `Scripts` → `PixelForgeAI`.
+
+See [INSTALL_GUIDE.md](INSTALL_GUIDE.md) for detailed instructions.
+
+---
+
+## � Credits
+
+This tool is built on top of [PixelAI by RED](https://red335.itch.io/pixelai-local-ai-directly-in-aseprite). Thank you for the foundation!
+
+---
+
+## �📄 License
+
+MIT License – Free to use and modify.
+
+*Made with ❤️ by [TextArcade](https://www.westonruths.com/text-arcade) – "Play in every pixel"*

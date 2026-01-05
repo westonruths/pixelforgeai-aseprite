@@ -449,7 +449,7 @@ local function create_main_dialog()
         current_dialog:close() 
     end
     
-    local dlg = Dialog("Aseprite Cloud AI")
+    local dlg = Dialog("PixelForgeAI")
     current_dialog = dlg
     
     -- Server status
@@ -467,36 +467,32 @@ local function create_main_dialog()
         option = current_settings.ai_provider,
         onchange = function()
             current_settings.ai_provider = dlg.data.ai_provider
-            -- Refresh dialog behavior (enable/disable strength)
-            local is_stability = (current_settings.ai_provider == "Stability AI")
-            local is_guide = current_settings.use_guide_image
-            
-            dlg:modify{id="use_guide_image", visible=true} -- Always visible now
-            dlg:modify{id="strength", visible=(is_stability and is_guide)}
+            -- Stability AI always uses guide (Structure Control requires it)
+            if current_settings.ai_provider == "Stability AI" then
+                current_settings.use_guide_image = true
+            end
+            -- Update enabled state (not visibility) to avoid dialog resize
+            local is_stab = (current_settings.ai_provider == "Stability AI")
+            dlg:modify{id="stability_info", text = is_stab and "⚙️ Select your guide layer/frame, then generate." or "(Shape Control only available for Stability AI)"}
+            dlg:modify{id="strength", enabled=is_stab}
             save_settings()
         end
     }
     
-    dlg:check{
-        id = "use_guide_image",
-        label = "Image Guide:",
-        text = "Use Active Layer Shape",
-        selected = current_settings.use_guide_image,
-        onclick = function()
-            current_settings.use_guide_image = dlg.data.use_guide_image
-            local is_stability = (current_settings.ai_provider == "Stability AI")
-            dlg:modify{id="strength", visible=(is_stability and current_settings.use_guide_image)}
-            save_settings()
-        end
+    -- Shape Control info label (always visible to prevent resize)
+    local is_stability = (current_settings.ai_provider == "Stability AI")
+    dlg:label{
+        id = "stability_info",
+        text = is_stability and "⚙️ Select your guide layer/frame, then generate." or "(Shape Control only available for Stability AI)"
     }
     
     dlg:slider{
         id = "strength",
-        label = "Decoration Strength:",
+        label = "AI Creativity:",
         min = 10,
         max = 100,
         value = math.floor(current_settings.strength * 100),
-        visible = (current_settings.ai_provider == "Stability AI" and current_settings.use_guide_image),
+        enabled = is_stability,
         onchange = function()
             current_settings.strength = dlg.data.strength / 100.0
             save_settings()

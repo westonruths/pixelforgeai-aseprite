@@ -1,42 +1,63 @@
-# PixelAI Installation Guide
+# PixelForgeAI – Installation Guide
 
-## 1. Setup the Server (Python)
-This tool requires a small background script to talk to the AI services.
+## Prerequisites
 
-### Prerequisites
-- **Python 3.10+** installed.
-
-### Steps
-1.  **Open Terminal** in this folder.
-2.  **Rename Config**:
-    - Rename `.env.example` to `.env`.
-    - Open it and paste your API key (get one from [OpenAI](https://platform.openai.com) or [Stability AI](https://platform.stability.ai)).
-    ```bash
-    OPENAI_API_KEY=sk-...
-    STABILITY_API_KEY=sk-...
-    ```
-3.  **Run Server**:
-    - **Mac/Linux:** Run `./start_server.sh`
-    - **Windows:** Run `start_server.bat` (if available, otherwise `python sd_server.py`)
-    - *The script will automatically install dependencies (flask, pillow, etc) on first run.*
+- **Python 3.10+** (check with `python3 --version`)
+- An API key from [OpenAI](https://platform.openai.com/api-keys) or [Stability AI](https://platform.stability.ai/account/keys)
 
 ---
 
-## 2. Install the Extension (Aseprite)
-1.  Double-click `pixel-ai-tool.aseprite-extension`.
-2.  Aseprite will open and ask to install. Click **Install**.
+## Step 1: Configure the Server
+
+1.  **Copy the example config:**
+    ```bash
+    cp .env.example .env
+    ```
+
+2.  **Edit `.env`** and paste your API key(s):
+    ```
+    OPENAI_API_KEY=sk-proj-...
+    STABILITY_API_KEY=sk-...
+    ```
+
+3.  **Start the server:**
+    - **Mac/Linux:** `./start_server.sh`
+    - **Windows:** `python sd_server.py`
+    
+    > The script auto-installs dependencies on first run.
+
+---
+
+## Step 2: Install the Extension
+
+1.  Double-click **`PixelForgeAI.aseprite-extension`**.
+2.  Aseprite will prompt you to install. Click **Install**.
 3.  Restart Aseprite.
 
 ---
 
-## 3. Usage
-1.  Ensure the server is running (you should see "Running on http://127.0.0.1:5000").
-2.  In Aseprite, go to `File` -> `Scripts` -> `Local AI Generator`.
-3.  **For DALL-E 3:**
-    - Select "OpenAI". Enter prompt. Click Generate.
-4.  **For Hex Prison (Shape Control):**
-    - Draw a shape (e.g. white hex on transparency).
-    - Select "Stability AI".
-    - Check "Use Active Layer Shape".
-    - Set Strength to ~0.7.
-    - Click Generate.
+## Step 3: Generate Art
+
+1.  Ensure the server is running (terminal shows `Running on http://127.0.0.1:5000`).
+2.  In Aseprite: `File` → `Scripts` → `PixelForgeAI`.
+
+### DALL-E 3 (Text-to-Image)
+- Select **OpenAI** as provider.
+- Enter a prompt and click **Generate**.
+
+### Stability AI (Shape Control)
+- Draw a shape on a layer (e.g., a white hexagon).
+- Select **Stability AI** as provider.
+- Check **"Use Active Layer Shape"**.
+- Set **Strength** to ~0.65–0.75.
+- Click **Generate**.
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "No API Key" error | Ensure `.env` exists and contains your key. Restart server. |
+| Server won't start | Check Python version (`python3 --version`). Must be 3.10–3.12. |
+| Extension not showing | Restart Aseprite after installing extension. |
